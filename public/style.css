@@ -1,0 +1,606 @@
+:root {
+  --bg: #fff7ea;
+  --panel: #fffdf8;
+  --tint: #fbf0dc;
+  --ink: #2c2541;
+  --muted: #857c98;
+  --line: #f0e3cc;
+  --dot: #e9d6b4;
+  --accent: #ffd166;
+  --live: #22a974;
+  --warn: #e9940f;
+  --off: #a49db3;
+  --danger: #e0544b;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1730;
+    --panel: #221e3b;
+    --tint: #2c2749;
+    --ink: #f2eeff;
+    --muted: #a49cc2;
+    --line: #352f58;
+    --dot: #3b3463;
+    --danger: #ff7a70;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.4 Nunito, ui-rounded, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+h1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+/* Three little notes, in the board's colors. */
+.logo {
+  position: relative;
+  width: 26px;
+  height: 22px;
+}
+
+.logo i {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.15);
+}
+
+.logo i:nth-child(1) {
+  left: 0;
+  top: 6px;
+  background: #a0c4ff;
+  transform: rotate(-10deg);
+}
+
+.logo i:nth-child(2) {
+  left: 11px;
+  top: 7px;
+  background: #ffadad;
+  transform: rotate(8deg);
+}
+
+.logo i:nth-child(3) {
+  left: 5px;
+  top: 0;
+  background: #ffd166;
+  transform: rotate(-2deg);
+}
+
+.how {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--panel);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.how:hover {
+  opacity: 0.85;
+}
+
+.chips,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.actions {
+  margin-left: auto;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--tint);
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.chip b {
+  color: var(--ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.chip i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--off);
+}
+
+#status[data-state="live"] i {
+  background: var(--live);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--live) 25%, transparent);
+}
+
+#status[data-state="reconnecting"] i,
+#status[data-state="connecting"] i {
+  background: var(--warn);
+  animation: pulse 1s infinite;
+}
+
+#pending-chip[data-some] {
+  border-color: var(--warn);
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+button {
+  font: inherit;
+  font-weight: 700;
+  padding: 5px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    transform 0.1s,
+    border-color 0.1s;
+}
+
+button:hover {
+  border-color: var(--muted);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--panel);
+}
+
+#add {
+  border-color: transparent;
+  background: var(--accent);
+  color: #2c2541;
+  box-shadow: 0 2px 0 #e0ae3c;
+}
+
+button.danger {
+  color: var(--danger);
+}
+
+/* The server says whether this tab can edit (data-mode is "edit" or
+   "read-only"). Until it does, neither shows. */
+body:not([data-mode="edit"]) #add,
+body:not([data-mode="edit"]) .note .delete,
+body:not([data-mode="edit"]) .editing,
+body:not([data-mode="read-only"]) .own-copy {
+  display: none;
+}
+body:not([data-mode="edit"]) .note {
+  cursor: default;
+}
+
+.own-copy p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+a.button {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.1s;
+}
+a.button:hover {
+  transform: translateY(-1px);
+}
+a.button.primary {
+  background: var(--accent);
+  color: #2c2541;
+  box-shadow: 0 2px 0 #e0ae3c;
+}
+#unlock {
+  margin: 14px 0 16px;
+  font-size: 12px;
+}
+#unlock summary {
+  color: var(--muted);
+  cursor: pointer;
+}
+#unlock form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+#unlock input {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+}
+#unlock .hint {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--danger);
+}
+button.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  text-decoration: underline;
+}
+button.link:hover {
+  transform: none;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+#viewport {
+  flex: 1;
+  overflow: auto;
+}
+
+#board {
+  position: relative;
+  width: 2400px;
+  height: 1600px;
+  background-image: radial-gradient(var(--dot) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+.note {
+  position: absolute;
+  width: 180px;
+  min-height: 120px;
+  padding: 26px 14px 14px;
+  border-radius: 6px;
+  color: #2c2541;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 8px 18px rgb(60 40 20 / 0.12);
+  cursor: grab;
+  touch-action: none;
+  transform: rotate(var(--tilt, 0deg));
+  transition:
+    left 0.15s,
+    top 0.15s,
+    transform 0.15s,
+    box-shadow 0.15s,
+    opacity 0.2s;
+}
+
+/* A strip of tape. */
+.note::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 56px;
+  height: 18px;
+  margin-left: -28px;
+  border-radius: 2px;
+  background: rgb(255 255 255 / 0.55);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  transform: rotate(-3deg);
+}
+
+.note:hover {
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.12), 0 12px 24px rgb(60 40 20 / 0.16);
+}
+
+.note.dragging {
+  transition: none;
+  cursor: grabbing;
+  z-index: 10;
+  transform: rotate(0deg) scale(1.04);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 0.12), 0 18px 32px rgb(60 40 20 / 0.2);
+}
+
+.note.pending {
+  opacity: 0.6;
+}
+
+/* Changed by someone else (app.js sets --by to their color). */
+.note.flash {
+  animation: flash 0.7s ease-out;
+}
+
+@keyframes flash {
+  from {
+    box-shadow: 0 0 0 5px var(--by), 0 8px 18px rgb(60 40 20 / 0.12);
+  }
+}
+
+.note.gone {
+  animation: gone 0.3s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes gone {
+  to {
+    opacity: 0;
+    transform: rotate(var(--tilt, 0deg)) scale(0.85);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note.flash,
+  .note.gone {
+    animation-duration: 0.01s;
+  }
+}
+
+.note .text {
+  outline: none;
+  min-height: 80px;
+  font: 18px/1.3 "Patrick Hand", "Comic Sans MS", cursive;
+  white-space: pre-wrap;
+  word-break: break-word;
+  cursor: text;
+}
+
+.note .delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  padding: 0 7px;
+  border: 0;
+  background: none;
+  color: rgb(0 0 0 / 0.4);
+  font-size: 16px;
+}
+
+.note .delete:hover {
+  color: rgb(0 0 0 / 0.75);
+}
+
+aside {
+  width: 290px;
+  overflow: auto;
+  padding: 12px 16px;
+  border-left: 1px solid var(--line);
+  background: var(--panel);
+}
+
+h2 {
+  margin: 10px 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+aside ul,
+aside ol {
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+aside li {
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 12px;
+}
+
+aside li small {
+  color: var(--muted);
+}
+
+.hint {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.invite,
+.speed {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.invite button,
+.speed button,
+.bot button {
+  padding: 2px 9px;
+  font-size: 12px;
+}
+
+.speed span {
+  margin-right: 2px;
+  color: var(--muted);
+  font-size: 12px;
+  align-self: center;
+}
+
+.invite button {
+  background: var(--tint);
+  border-color: transparent;
+}
+
+button:disabled,
+button[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: default;
+  transform: none;
+}
+
+/* A tooltip that also shows for a disabled button, and on keyboard focus. */
+.has-tip {
+  position: relative;
+}
+
+.tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  width: max-content;
+  max-width: min(300px, calc(100vw - 32px));
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--panel);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.2);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.15s,
+    transform 0.15s,
+    visibility 0.15s;
+  pointer-events: none;
+}
+
+.tip code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--panel) 18%, transparent);
+  font-size: 11.5px;
+}
+
+.has-tip:hover .tip,
+.has-tip:focus-within .tip {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.bot > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bot .toggle {
+  min-width: 64px;
+  color: var(--muted);
+}
+
+.bot .toggle[data-on="true"] {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--live) 18%, var(--panel));
+  color: var(--live);
+}
+
+.bot .where {
+  flex: 1;
+}
+
+.bot.left {
+  opacity: 0.55;
+}
+
+.bot .state {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--off);
+}
+
+.bot .state[data-state="live"] {
+  background: var(--live);
+}
+
+.bot .state[data-state="reconnecting"],
+.bot .state[data-state="connecting"] {
+  background: var(--warn);
+}
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--panel), 0 0 0 3px var(--line);
+}
+
+#toast {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--panel);
+  font-weight: 600;
+  opacity: 0;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+  pointer-events: none;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 720px) {
+  aside {
+    display: none;
+  }
+
+  .actions {
+    margin-left: 0;
+  }
+}

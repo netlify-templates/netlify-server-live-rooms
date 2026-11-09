@@ -1,0 +1,24 @@
+{
+  "name": "netlify-server-live-rooms",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Multi-user WebSocket rooms on Netlify Server that stay consistent through deploys, recycling and crashes, with a sticky-note board as the demo",
+  "scripts": {
+    "db:local": "node scripts/local-db.mjs",
+    "local": "node --env-file-if-exists=.env scripts/local.mjs",
+    "test": "node --env-file-if-exists=.env --test --test-concurrency=1 --test-timeout=60000 \"test/*.test.mjs\"",
+    "test:failover": "node --env-file-if-exists=.env scripts/test-failover.mjs",
+    "test:chaos": "node --env-file-if-exists=.env scripts/test-chaos.mjs",
+    "test:remote": "node scripts/test-remote.mjs",
+    "bench": "node --env-file-if-exists=.env scripts/bench.mjs"
+  },
+  "dependencies": {
+    "@netlify/database": "^2.0.3",
+    "@netlify/server": "^0.1.6",
+    "pg": "^8.13.0"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

@@ -1,0 +1,9 @@
+[build]
+  # Only this folder is served as static files.
+  publish = "public"
+  # There's no build step. Setting a command keeps framework detection from
+  # guessing one.
+  command = "echo 'No build step'"
+
+[dev]
+  framework = "#static"

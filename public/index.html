@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Netlify Server - durable live board demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Patrick+Hand&display=swap" />
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1><span class="logo" aria-hidden="true"><i></i><i></i><i></i></span>Netlify Server - durable live board demo</h1>
+      <a class="how" href="/how-it-works">How it works</a>
+
+      <div class="chips">
+        <span class="chip" id="status" data-state="connecting"><i></i><b>Connecting</b></span>
+        <span class="chip" id="board-chip" title="Add ?board=name to the address for a board of your own">board <b id="board-name"></b></span>
+        <span class="chip" title="The instance this tab is connected to"><i id="instance-dot"></i>instance <b id="instance">–</b></span>
+        <span class="chip" title="The deploy that instance runs"><i id="deploy-dot"></i>deploy <b id="deploy">–</b></span>
+        <span class="chip" title="The last version of the board this tab has from the server">version <b id="version">–</b></span>
+        <span class="chip" id="pending-chip" title="Changes not yet confirmed by the server"><b id="pending">0</b> unsent</span>
+      </div>
+
+      <div class="actions">
+        <button id="add">New note</button>
+        <button id="offline" aria-pressed="false">Go offline</button>
+        <span class="has-tip">
+          <button id="crash" class="danger" aria-disabled="true" aria-describedby="crash-tip">Crash instance</button>
+          <span class="tip" role="tooltip" id="crash-tip">
+            This button exits the instance this tab is connected to, with no graceful shutdown, so you can watch everyone reconnect without losing a change. It's turned off on this site, since anyone can press it. To try it, deploy your own copy and set <code>ALLOW_CRASH=true</code>.
+          </span>
+        </span>
+      </div>
+    </header>
+
+    <main>
+      <div id="viewport">
+        <div id="board" title="Double-click to add a note"></div>
+      </div>
+
+      <aside>
+        <section class="own-copy">
+          <h2>Want to try it?</h2>
+          <p>This board is read-only. To add notes, move them around and bring in simulated users, deploy your own copy to Netlify.</p>
+          <a class="button primary" href="https://app.netlify.com/start/deploy?repository=https://github.com/netlify-templates/netlify-server-live-rooms">Deploy to Netlify</a>
+          <details id="unlock">
+            <summary>Have the edit token?</summary>
+            <form id="unlock-form">
+              <input type="password" name="token" autocomplete="off" placeholder="Edit token" aria-label="Edit token" required />
+              <button>Unlock</button>
+              <p class="hint" id="unlock-error" role="alert"></p>
+            </form>
+          </details>
+        </section>
+        <section class="editing">
+          <h2>Add simulated users</h2>
+          <p class="hint">Click to add one. Each gets its own connection, like a person in another browser. Up to 3 at a time, and each leaves after 3 minutes (remove it to add another).</p>
+          <div class="invite" id="invite"></div>
+          <div class="speed" role="group" aria-label="How fast they act" id="speed"><span>Speed</span></div>
+          <ul id="bots"></ul>
+          <p class="hint" id="lock-line" hidden>You've unlocked editing in this browser. <button class="link" id="lock">Lock it again</button></p>
+        </section>
+        <section>
+          <h2>Here now</h2>
+          <ul id="people"></ul>
+        </section>
+        <section>
+          <h2>Activity</h2>
+          <ul id="activity"></ul>
+        </section>
+      </aside>
+    </main>
+
+    <div id="toast" role="status"></div>
+  </body>
+</html>
